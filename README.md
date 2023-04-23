@@ -38,6 +38,8 @@ This tool is very rudimentary, but contributions are welcomed!
 
 Especially for the HTML/CSS :)
 
+Likewise it only supports a small subset of 5 languages so far, please add more!
+
 ## attribution
 
 This tool uses icons from [FontAwesome](https://fontawesome.com/) by default.
