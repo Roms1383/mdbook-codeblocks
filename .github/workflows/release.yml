@@ -18,21 +18,27 @@ jobs:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
             cross: false
+            ext: tar.gz
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             cross: false
+            ext: zip
           - target: x86_64-pc-windows-gnu
             os: ubuntu-latest
             cross: true
+            ext: zip
           - target: x86_64-unknown-linux-musl
             os: ubuntu-latest
             cross: true
+            ext: tar.gz
           - target: x86_64-apple-darwin
             os: macos-latest
             cross: false
+            ext: tar.gz
           - target: aarch64-apple-darwin
             os: macos-latest
             cross: false
+            ext: tar.gz
     runs-on: ${{ matrix.flavor.os }}
     steps:
       - name: ⬇️ checkout repository
@@ -62,18 +68,22 @@ jobs:
         uses: extractions/setup-just@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: 📦 bundle Unix / Linux / MacOS binary
-        if: matrix.flavor.target != 'x86_64-pc-windows-msvc'
+      - name: 📦 bundle Unix / Linux / MacOS
+        if: matrix.flavor.target != 'x86_64-pc-windows-msvc' && matrix.flavor.target != 'x86_64-pc-windows-gnu'
         run: |
-          just bundle-unix "v${{ steps.tagName.outputs.version }}" "${{ matrix.flavor.target }}"
-      - name: 📦 bundle Windows binary
+          just bundle-tar "v${{ steps.tagName.outputs.version }}" "${{ matrix.flavor.target }}"
+      - name: 📦 bundle Windows MSVC
         if: matrix.flavor.target == 'x86_64-pc-windows-msvc'
         run: |
-          just bundle-windows "v${{ steps.tagName.outputs.version }}" "${{ matrix.flavor.target }}"
+          just bundle-7z "v${{ steps.tagName.outputs.version }}" "${{ matrix.flavor.target }}"
+      - name: 📦 bundle Windows GNU
+        if: matrix.flavor.target == 'x86_64-pc-windows-gnu'
+        run: |
+          just bundle-zip "v${{ steps.tagName.outputs.version }}" "${{ matrix.flavor.target }}"
       - name: ↗️ upload artifact
         uses: actions/upload-artifact@v3
         with:
-          path: mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.zip
+          path: mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.${{ matrix.flavor.ext }}
   release:
     needs: [bundle]
     runs-on: ubuntu-latest
