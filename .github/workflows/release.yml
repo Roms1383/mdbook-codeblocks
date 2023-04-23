@@ -2,13 +2,84 @@ on:
   push:
     tags:
       - "v*.*.*"
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
   CARGO_UNSTABLE_SPARSE_REGISTRY: true
 
 jobs:
+  bundle:
+    strategy:
+      fail-fast: true
+      matrix:
+        flavor:
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            cross: false
+          - target: x86_64-pc-windows-gnu
+            os: ubuntu-latest
+            cross: true
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            cross: false
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            cross: true
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            cross: false
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            cross: false
+    runs-on: ${{ matrix.flavor.os }}
+    steps:
+      - name: ⬇️ checkout repository
+        uses: actions/checkout@v3
+      - name: 🛠 setup cargo toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          target: ${{ matrix.flavor.target }}
+          override: true
+      - name: ♻️ cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: ubuntu-latest
+      - name: ⚙️ build for ${{ matrix.flavor.target }}
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: ${{ matrix.flavor.cross }}
+          command: build
+          args: |
+            --release
+            --target ${{ matrix.flavor.target }}
+      - name: 🧐 read manifest version
+        id: tagName
+        run: |
+          VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
+          echo "::set-output name=version::$VERSION"
+      - name: 📦 bundle binary
+        if: ${{ matrix.flavor.os }} == 'windows-latest'
+        run: |
+          7z a "mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.zip" "./target/release/mdbook-codeblocks.exe"
+      - name: 📦 bundle binary
+        if: (${{ matrix.flavor.os }} == 'macos-latest' || ${{ matrix.flavor.os }} == 'ubuntu-latest') && ${{ matrix.flavor.target }} != 'x86_64-unknown-linux-musl'
+        run: |
+          mv target/release/mdbook-codeblocks mdbook-codeblocks
+          tar -czvf mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.tar.gz mdbook-codeblocks
+      - name: 📦 bundle binary
+        if: ${{ matrix.flavor.target }} == 'x86_64-unknown-linux-musl'
+        run: |
+          mv target/${{ matrix.flavor.target }}/release/mdbook-codeblocks mdbook-codeblocks
+          tar -czvf mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.tar.gz mdbook-codeblocks
+      - name: ↗️ upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.zip
   release:
+    needs: [bundle]
     runs-on: ubuntu-latest
     steps:
       - name: ⬇️ checkout repository
@@ -21,8 +92,24 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           shared-key: ubuntu-latest
+      - name: ↙️ download artifacts
+        uses: actions/download-artifact@v3
+      - name: 🧐 read manifest version
+        id: tagName
+        run: |
+          VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
+          echo "::set-output name=version::$VERSION"
       - name: 🔖 create GitHub release
         uses: softprops/action-gh-release@v1
+        with:
+          name: v${{ steps.tagName.outputs.version }}
+          files: |
+            mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-aarch64-apple-darwin.tar.gz
+            mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-apple-darwin.tar.gz
+            mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-pc-windows-msvc.zip
+            mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-pc-windows-gnu.zip
+            mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-unknown-linux-gnu.tar.gz
+            mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-unknown-linux-musl.tar.gz
       - name: 🦀 publish to crates.io
         uses: katyo/publish-crates@v2
         with:
