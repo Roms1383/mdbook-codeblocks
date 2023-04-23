@@ -8,3 +8,13 @@ test OPEN='false':
   cargo install --path .
   cd example && RUST_LOG=info mdbook build{{ if OPEN == "true" { " --open" } else { "" } }} .
   cargo uninstall mdbook-codeblocks
+
+# bundle binary (CI)
+bundle-unix TAG TARGET:
+  mv {{ join( "target", TARGET, "release", if TARGET == 'x86_64-pc-windows-gnu' { "mdbook-codeblocks.exe" } else { "mdbook-codeblocks" } ) }} {{ if TARGET == 'x86_64-pc-windows-gnu' { "mdbook-codeblocks.exe" } else { "mdbook-codeblocks" } }}
+  tar -czvf mdbook-codeblocks-{{TAG}}-{{TARGET}}.tar.gz \
+  {{ if TARGET == 'x86_64-pc-windows-gnu' { "mdbook-codeblocks.exe" } else { "mdbook-codeblocks" } }}
+
+# bundle binary (CI)
+bundle-windows TAG TARGET:
+  7z a "mdbook-codeblocks-{{TAG}}-{{TARGET}}.zip" "{{ join( `pwd`, "target", TARGET, "release", "mdbook-codeblocks.exe" ) }}"

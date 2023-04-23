@@ -11,18 +11,19 @@ env:
 jobs:
   bundle:
     strategy:
-      fail-fast: true
+      max-parallel: 3
+      fail-fast: false
       matrix:
         flavor:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            cross: false
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             cross: false
           - target: x86_64-pc-windows-gnu
             os: ubuntu-latest
             cross: true
-          - target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
-            cross: false
           - target: x86_64-unknown-linux-musl
             os: ubuntu-latest
             cross: true
@@ -43,37 +44,35 @@ jobs:
           toolchain: stable
           target: ${{ matrix.flavor.target }}
           override: true
+      - name: 🛠 setup cross toolchain
+        if: matrix.flavor.cross == true
+        run: cargo install cross
       - name: ♻️ cache Rust dependencies
         uses: Swatinem/rust-cache@v2
-        with:
-          shared-key: ubuntu-latest
-      - name: ⚙️ build for ${{ matrix.flavor.target }}
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: ${{ matrix.flavor.cross }}
-          command: build
-          args: |
-            --release
-            --target ${{ matrix.flavor.target }}
+      - name: ⚙️ cross build for ${{ matrix.flavor.target }}
+        if: matrix.flavor.cross == true
+        run: cross build --release --target ${{ matrix.flavor.target }}
+      - name: ⚙️ cargo build for ${{ matrix.flavor.target }}
+        if: matrix.flavor.cross == false
+        run: cargo build --release --target ${{ matrix.flavor.target }}
       - name: 🧐 read manifest version
+        shell: bash
         id: tagName
         run: |
           VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
-          echo "::set-output name=version::$VERSION"
-      - name: 📦 bundle binary
-        if: ${{ matrix.flavor.os }} == 'windows-latest'
+          echo "{version}=$VERSION" >> $GITHUB_OUTPUT
+      - name: ⬇️ setup Just
+        uses: extractions/setup-just@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 📦 bundle Unix / Linux / MacOS binary
+        if: matrix.flavor.target != 'x86_64-pc-windows-msvc'
         run: |
-          7z a "mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.zip" "./target/release/mdbook-codeblocks.exe"
-      - name: 📦 bundle binary
-        if: (${{ matrix.flavor.os }} == 'macos-latest' || ${{ matrix.flavor.os }} == 'ubuntu-latest') && ${{ matrix.flavor.target }} != 'x86_64-unknown-linux-musl'
+          just bundle-unix "v${{ steps.tagName.outputs.version }}" "${{ matrix.flavor.target }}"
+      - name: 📦 bundle Windows binary
+        if: matrix.flavor.target == 'x86_64-pc-windows-msvc'
         run: |
-          mv target/release/mdbook-codeblocks mdbook-codeblocks
-          tar -czvf mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.tar.gz mdbook-codeblocks
-      - name: 📦 bundle binary
-        if: ${{ matrix.flavor.target }} == 'x86_64-unknown-linux-musl'
-        run: |
-          mv target/${{ matrix.flavor.target }}/release/mdbook-codeblocks mdbook-codeblocks
-          tar -czvf mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.tar.gz mdbook-codeblocks
+          just bundle-windows "v${{ steps.tagName.outputs.version }}" "${{ matrix.flavor.target }}"
       - name: ↗️ upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -90,18 +89,17 @@ jobs:
           toolchain: stable
       - name: ♻️ cache Rust dependencies
         uses: Swatinem/rust-cache@v2
-        with:
-          shared-key: ubuntu-latest
       - name: ↙️ download artifacts
         uses: actions/download-artifact@v3
       - name: 🧐 read manifest version
         id: tagName
         run: |
           VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
-          echo "::set-output name=version::$VERSION"
+          echo "{version}=$VERSION" >> $GITHUB_OUTPUT
       - name: 🔖 create GitHub release
         uses: softprops/action-gh-release@v1
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           name: v${{ steps.tagName.outputs.version }}
           files: |
             mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-aarch64-apple-darwin.tar.gz
