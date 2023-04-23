@@ -1,6 +1,6 @@
 # mdbook-codeblocks
 
-![build](https://github.com/Roms1383/mdbook-codeblocks/actions/workflows/quality.yml/badge.svg)
+![build](https://github.com/Roms1383/mdbook-codeblocks/actions/workflows/quality.yml/badge.svg) [![crates.io](https://img.shields.io/crates/v/mdbook-codeblocks.svg)](https://crates.io/crates/mdbook-codeblocks)
 
 A preprocessor for [mdbook](https://rust-lang.github.io/mdBook/) which prepend a vignette above code blocks.
 
