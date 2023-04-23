@@ -27,5 +27,25 @@ int main() {
 }
 ```
 
+```yaml
+some:
+  interesting:
+    - property
+```
+
+```json
+{
+  "some": { "interesting": ["property"] }
+}
+```
+
+```xml
+<some>
+  <interesting>
+    <property />
+  </interesting>
+</some>
+```
+
 contrary to code blocks,
 `inline` and ```fenced``` are left untouched.

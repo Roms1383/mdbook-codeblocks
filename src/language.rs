@@ -1,15 +1,28 @@
 use crate::preprocessor::Cfg;
 use log::warn;
 
-pub const SUPPORTED_LANGUAGES: [Language; 5] = [
+pub const SUPPORTED_LANGUAGES: [Language; 8] = [
     Language::Redscript,
     Language::Swift,
     Language::Cpp,
     Language::Lua,
     Language::Rust,
+    Language::YAML,
+    Language::JSON,
+    Language::XML,
 ];
 
-pub const SUPPORTED_OPTIONS: [&str; 6] = ["rust", "redscript", "lua", "cpp", "swift", "icon"];
+pub const SUPPORTED_OPTIONS: [&str; 9] = [
+    "rust",
+    "redscript",
+    "lua",
+    "cpp",
+    "swift",
+    "yaml",
+    "json",
+    "xml",
+    "icon",
+];
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum Language {
@@ -20,6 +33,9 @@ pub enum Language {
     Rust,
     Cpp,
     Lua,
+    YAML,
+    JSON,
+    XML,
 }
 
 impl Language {
@@ -31,6 +47,9 @@ impl Language {
             Self::Lua => "lua",
             Self::Cpp => "cpp",
             Self::Rust => "rust",
+            Self::YAML => "yaml",
+            Self::JSON => "json",
+            Self::XML => "xml",
         }
     }
     pub fn as_option(&self) -> Option<&str> {
@@ -67,6 +86,9 @@ impl Language {
             Self::Rust => "https://www.rust-lang.org",
             Self::Cpp => "https://isocpp.org",
             Self::Lua => "https://www.lua.org",
+            Self::YAML => "https://yaml.org",
+            Self::JSON => "https://www.json.org",
+            Self::XML => "https://www.xml.org",
         }
     }
     pub fn icon<'a>(&'a self, cfg: &'a Cfg) -> &'a str {
@@ -85,6 +107,9 @@ impl Language {
             Self::Rust => "fa-spaghetti-monster-flying",
             Self::Cpp => "fa-cube",
             Self::Lua => "fa-globe",
+            Self::YAML => "fa-file",
+            Self::JSON => "fa-file",
+            Self::XML => "fa-file",
         }
     }
     pub fn color<'a>(&'a self, cfg: &'a Cfg) -> Option<&'a str> {
@@ -132,6 +157,9 @@ impl AsRef<str> for Language {
             Self::Rust => "Rust",
             Self::Cpp => "C++",
             Self::Lua => "Lua",
+            Self::YAML => "YAML",
+            Self::JSON => "JSON",
+            Self::XML => "XML",
         }
     }
 }
