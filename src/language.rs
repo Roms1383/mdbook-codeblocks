@@ -9,7 +9,7 @@ pub const SUPPORTED_LANGUAGES: [Language; 5] = [
     Language::Rust,
 ];
 
-pub const SUPPORTED_OPTIONS: [&str; 5] = ["rust", "redscript", "lua", "cpp", "swift"];
+pub const SUPPORTED_OPTIONS: [&str; 6] = ["rust", "redscript", "lua", "cpp", "swift", "icon"];
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum Language {
@@ -74,6 +74,9 @@ impl Language {
             if let Some(ref icon) = option.icon {
                 return icon.as_str();
             }
+        }
+        if let Some(ref icon) = cfg.icon {
+            return icon.as_str();
         }
         match self {
             Self::Empty | Self::Unknown => "",
