@@ -83,6 +83,7 @@ jobs:
       - name: ↗️ upload artifact
         uses: actions/upload-artifact@v3
         with:
+          name: mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.${{ matrix.flavor.ext }}
           path: mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.${{ matrix.flavor.ext }}
   release:
     needs: [bundle]
@@ -96,6 +97,8 @@ jobs:
         uses: Swatinem/rust-cache@v2
       - name: ↙️ download artifacts
         uses: actions/download-artifact@v3
+        with:
+          path: artifacts
       - name: 🧐 read manifest version
         id: tagName
         run: |
@@ -107,12 +110,12 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: v${{ steps.tagName.outputs.version }}
           files: |
-            mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-aarch64-apple-darwin.tar.gz
-            mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-apple-darwin.tar.gz
-            mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-pc-windows-msvc.zip
-            mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-pc-windows-gnu.zip
-            mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-unknown-linux-gnu.tar.gz
-            mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-unknown-linux-musl.tar.gz
+            artifacts/mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-aarch64-apple-darwin.tar.gz
+            artifacts/mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-apple-darwin.tar.gz
+            artifacts/mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-pc-windows-msvc.zip
+            artifacts/mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-pc-windows-gnu.zip
+            artifacts/mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-unknown-linux-gnu.tar.gz
+            artifacts/mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-unknown-linux-musl.tar.gz
       - name: 🦀 publish to crates.io
         uses: katyo/publish-crates@v2
         with:
