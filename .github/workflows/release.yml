@@ -88,6 +88,8 @@ jobs:
   release:
     needs: [bundle]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: ⬇️ checkout repository
         uses: actions/checkout@v3
