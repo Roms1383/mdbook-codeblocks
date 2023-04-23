@@ -30,6 +30,8 @@ Here's what it will produce:
 
 You can actually find it in `example` folder.
 
+⚠️ also, do not forget to embed [FontAwesome css](https://cdnjs.com/libraries/font-awesome), see `example/theme/head.hbs`.
+
 ## roadmap
 
 This tool is very rudimentary, but contributions are welcomed!
@@ -38,4 +40,4 @@ Especially for the HTML/CSS :)
 
 ## attribution
 
-This tool uses icons from [Fontawesome](https://fontawesome.com/) by default.
+This tool uses icons from [FontAwesome](https://fontawesome.com/) by default.
