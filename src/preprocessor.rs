@@ -132,8 +132,7 @@ impl Preprocessor for Codeblocks {
 fn is_supported(mark: &str) -> bool {
     let found = SUPPORTED_LANGUAGES
         .iter()
-        .find(|language| mark == language.as_mark())
-        .is_some();
+        .any(|language| mark == language.as_mark());
     found
 }
 
@@ -166,7 +165,7 @@ fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::
             }
 
             (Text(Borrowed(text)), Open(language)) => {
-                let language = language.clone();
+                let language = *language;
                 state = Closing;
                 Some(Html(prepend_vignette(text, language, cfg).into()))
             }

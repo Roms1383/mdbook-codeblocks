@@ -9,7 +9,7 @@ pub const SUPPORTED_LANGUAGES: [Language; 5] = [
     Language::Rust,
 ];
 
-pub const SUPPORTED_OPTIONS: [&'static str; 5] = [&"rust", &"redscript", &"lua", &"cpp", &"swift"];
+pub const SUPPORTED_OPTIONS: [&str; 5] = ["rust", "redscript", "lua", "cpp", "swift"];
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum Language {
@@ -87,11 +87,9 @@ impl Language {
     pub fn color<'a>(&'a self, cfg: &'a Cfg) -> Option<&'a str> {
         if let Some(option) = cfg.overrides.get(self.as_option().unwrap()) {
             if let Some(ref color) = option.color {
-                if let Err(_) = raster::Color::hex(color) {
-                    if let Err(_) = color_name::Color::val().by_string(color.clone()) {
-                        warn!("unknown color '{color}', skipped...");
-                        return None;
-                    }
+                if raster::Color::hex(color).is_err() && color_name::Color::val().by_string(color.clone()).is_err() {
+                    warn!("unknown color '{color}', skipped...");
+                    return None;
                 }
                 return Some(color.as_str());
             }
