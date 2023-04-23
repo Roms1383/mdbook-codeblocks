@@ -6,7 +6,13 @@ A preprocessor for [mdbook](https://rust-lang.github.io/mdBook/) which prepend a
 
 ## usage
 
-Customization is at its early stage, and let you define language's `icon`, `label`, `color` and `link`.
+First you need to install the pre-processor by running the following command.
+
+```sh
+cargo install mdbook-codeblocks
+```
+
+Next you need to add the preprocessor to your `book.toml`. Customization is at its early stage, but you can already define language's custom `icon`, `label`, `color` and `link`:
 
 ```toml
 [book]
