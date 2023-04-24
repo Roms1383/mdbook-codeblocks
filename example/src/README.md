@@ -49,3 +49,18 @@ some:
 
 contrary to code blocks,
 `inline` and ```fenced``` are left untouched.
+
+it should also work when deeply nested:
+
+1. outer:
+   1. inner:
+
+      ```swift reds
+      GameInstance
+        .GetStatusEffectSystem(this.GetGame())
+        .ApplyStatusEffect(
+          this.GetEntityID(),
+          t"BaseStatusEffect.SplinterAddicted",
+          this.GetRecordID(),
+          this.GetEntityID());
+      ```

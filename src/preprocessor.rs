@@ -143,8 +143,8 @@ fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::
 
     enum State {
         None,
-        Open(Language),
-        Closing,
+        Open(Language, String),
+        Gather(Language, String),
     }
 
     let mut state = State::None;
@@ -160,19 +160,26 @@ fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::
 
         match (&e, &mut state) {
             (Start(CodeBlock(Fenced(Borrowed(mark)))), None) if is_supported(mark) => {
-                state = Open(Language::from(*mark));
-                Some(Start(Paragraph))
+                let language = Language::from(*mark);
+                state = Open(language.clone(), "".to_string());
+                Some(Html(open_vignette(language, cfg).into()))
             }
 
-            (Text(Borrowed(text)), Open(language)) => {
+            (Text(Borrowed(text)), Open(language, content)) => {
                 let language = *language;
-                state = Closing;
-                Some(Html(prepend_vignette(text, language, cfg).into()))
+                state = Gather(language, content.to_owned());
+                Some(Html(text.to_string().into()))
             }
 
-            (End(CodeBlock(Fenced(Borrowed(mark)))), Closing) if is_supported(mark) => {
+            (Text(Borrowed(text)), Gather(language, content)) => {
+                content.push_str(text);
+                state = Gather(language.to_owned(), content.to_owned());
+                Some(Html(text.to_string().into()))
+            }
+
+            (End(CodeBlock(Fenced(Borrowed(mark)))), Gather(_, _)) if is_supported(mark) => {
                 state = None;
-                Some(End(Paragraph))
+                Some(Html(close_vignette().into()))
             }
             _ => Some(e),
         }
@@ -180,8 +187,7 @@ fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::
     cmark(events, &mut buf).map(|_| buf)
 }
 
-/// prepend a code block with a vignette
-fn prepend_vignette(source: &str, mark: Language, cfg: &Cfg) -> String {
+fn open_vignette(mark: Language, cfg: &Cfg) -> String {
     let link = mark.link(cfg);
     let name = mark.label(cfg);
     let icon = mark.icon(cfg);
@@ -190,8 +196,11 @@ fn prepend_vignette(source: &str, mark: Language, cfg: &Cfg) -> String {
         .map(|x| format!("--fa-primary-color:{x};color:{x};"))
         .unwrap_or("".into());
     format!(
-        "<div class='codeblocks'>\n<a style=\"font-size:12px;text-decoration:none;{color}\" href=\"{link}\"><i style=\"font-size:18px;{color}\" class=\"fa fa-solid {icon}\"></i>&nbsp;&nbsp;{name}</a>\n\n```{}\n{}```\n\n</div>",
+        "<div class='codeblocks'>\n<a style=\"font-size:12px;text-decoration:none;{color}\" href=\"{link}\"><i style=\"font-size:18px;{color}\" class=\"fa fa-solid {icon}\"></i>&nbsp;&nbsp;{name}</a>\n\n```{}\n",
         mark.as_official_mark(),
-        source
     )
+}
+
+fn close_vignette() -> String {
+    format!("```\n\n</div>")
 }
