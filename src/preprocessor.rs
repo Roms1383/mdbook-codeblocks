@@ -143,48 +143,48 @@ fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::
 
     enum State {
         None,
-        Open(Language, String),
-        Gather(Language, String),
+        Open,
+        Gather,
     }
 
     let mut state = State::None;
     let mut buf = String::with_capacity(chapter.content.len());
     let parser = mdbook::utils::new_cmark_parser(&chapter.content, false);
     #[allow(clippy::unnecessary_filter_map, unused_imports, unused_assignments)]
-    let events = parser.filter_map(|e| {
+    let events = parser.fold(vec![], |mut acc, ref e| {
         use CodeBlockKind::*;
         use CowStr::*;
         use Event::*;
         use State::*;
         use Tag::{CodeBlock, Paragraph};
-
-        match (&e, &mut state) {
+        match (e, &mut state) {
             (Start(CodeBlock(Fenced(Borrowed(mark)))), None) if is_supported(mark) => {
                 let language = Language::from(*mark);
-                state = Open(language.clone(), "".to_string());
-                Some(Html(open_vignette(language, cfg).into()))
+                acc.push(Start(Paragraph));
+                acc.push(Html(open_vignette(language, cfg).into()));
+                acc.push(e.clone());
+                state = Open;
             }
-
-            (Text(Borrowed(text)), Open(language, content)) => {
-                let language = *language;
-                state = Gather(language, content.to_owned());
-                Some(Html(text.to_string().into()))
+            (Text(Borrowed(_)), Open) => {
+                acc.push(e.clone());
+                state = Gather;
             }
-
-            (Text(Borrowed(text)), Gather(language, content)) => {
-                content.push_str(text);
-                state = Gather(language.to_owned(), content.to_owned());
-                Some(Html(text.to_string().into()))
+            (Text(Borrowed(_)), Gather) => {
+                acc.push(e.clone());
             }
-
-            (End(CodeBlock(Fenced(Borrowed(mark)))), Gather(_, _)) if is_supported(mark) => {
+            (End(CodeBlock(Fenced(Borrowed(mark)))), Gather) if is_supported(mark) => {
                 state = None;
-                Some(Html(close_vignette().into()))
+                acc.push(e.clone());
+                acc.push(Html(close_vignette().into()));
+                acc.push(End(Paragraph));
             }
-            _ => Some(e),
-        }
+            _ => {
+                acc.push(e.clone());
+            }
+        };
+        acc
     });
-    cmark(events, &mut buf).map(|_| buf)
+    cmark(events.iter(), &mut buf).map(|_| buf)
 }
 
 fn open_vignette(mark: Language, cfg: &Cfg) -> String {
@@ -196,11 +196,10 @@ fn open_vignette(mark: Language, cfg: &Cfg) -> String {
         .map(|x| format!("--fa-primary-color:{x};color:{x};"))
         .unwrap_or("".into());
     format!(
-        "<div class='codeblocks'>\n<a style=\"font-size:12px;text-decoration:none;{color}\" href=\"{link}\"><i style=\"font-size:18px;{color}\" class=\"fa fa-solid {icon}\"></i>&nbsp;&nbsp;{name}</a>\n\n```{}\n",
-        mark.as_official_mark(),
+        "<div class='codeblocks'>\n<a style=\"font-size:12px;text-decoration:none;{color}\" href=\"{link}\"><i style=\"font-size:18px;{color}\" class=\"fa fa-solid {icon}\"></i>&nbsp;&nbsp;{name}</a>",
     )
 }
 
 fn close_vignette() -> String {
-    format!("```\n\n</div>")
+    format!("</div>")
 }
