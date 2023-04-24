@@ -85,6 +85,7 @@ jobs:
         with:
           name: mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.${{ matrix.flavor.ext }}
           path: mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.${{ matrix.flavor.ext }}
+          if-no-files-found: error
   release:
     needs: [bundle]
     runs-on: ubuntu-latest
@@ -110,6 +111,7 @@ jobs:
       - name: 🔖 create GitHub release
         uses: softprops/action-gh-release@v1
         with:
+          fail_on_unmatched_files: true
           token: ${{ secrets.GITHUB_TOKEN }}
           name: v${{ steps.tagName.outputs.version }}
           files: |
