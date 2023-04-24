@@ -63,7 +63,7 @@ jobs:
         id: tagName
         run: |
           VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
-          echo "{version}=$VERSION" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: ⬇️ setup Just
         uses: extractions/setup-just@v1
         env:
@@ -102,10 +102,11 @@ jobs:
         with:
           path: artifacts
       - name: 🧐 read manifest version
+        shell: bash
         id: tagName
         run: |
           VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
-          echo "{version}=$VERSION" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: 🔖 create GitHub release
         uses: softprops/action-gh-release@v1
         with:
