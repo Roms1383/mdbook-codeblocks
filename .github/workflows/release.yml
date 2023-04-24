@@ -10,6 +10,8 @@ env:
 
 jobs:
   bundle:
+    permissions:
+      contents: write
     strategy:
       max-parallel: 3
       fail-fast: false
