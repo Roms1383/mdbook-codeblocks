@@ -59,12 +59,6 @@ impl Language {
             lang => Some(lang.as_mark()),
         }
     }
-    pub fn as_official_mark(&self) -> &str {
-        match self {
-            Self::Redscript => Self::Swift.as_mark(),
-            s => s.as_mark(),
-        }
-    }
     pub fn label<'a>(&'a self, cfg: &'a Cfg) -> &'a str {
         if let Some(option) = cfg.overrides.get(self.as_option().unwrap()) {
             if let Some(ref label) = option.label {
