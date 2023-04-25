@@ -39,24 +39,24 @@ pub enum Language {
 }
 
 impl Language {
-    pub fn as_mark(&self) -> &str {
+    pub fn as_mark(&self) -> &[&str] {
         match self {
-            Self::Empty | Self::Unknown => "",
-            Self::Redscript => "swift reds",
-            Self::Swift => "swift",
-            Self::Lua => "lua",
-            Self::Cpp => "cpp",
-            Self::Rust => "rust",
-            Self::YAML => "yaml",
-            Self::JSON => "json",
-            Self::XML => "xml",
+            Self::Redscript => &["swift reds", "swift redscript"],
+            Self::Swift => &["swift"],
+            Self::Lua => &["lua"],
+            Self::Cpp => &["cpp"],
+            Self::Rust => &["rust", "rs"],
+            Self::YAML => &["yaml", "yml"],
+            Self::JSON => &["json"],
+            Self::XML => &["xml"],
+            Self::Empty | Self::Unknown => &[""],
         }
     }
     pub fn as_option(&self) -> Option<&str> {
         match self {
             Self::Empty | Self::Unknown => None,
             Self::Redscript => Some("redscript"),
-            lang => Some(lang.as_mark()),
+            lang => Some(lang.as_mark().get(0).unwrap()),
         }
     }
     pub fn label<'a>(&'a self, cfg: &'a Cfg) -> &'a str {
@@ -130,7 +130,7 @@ impl From<&str> for Language {
         SUPPORTED_LANGUAGES
             .iter()
             .copied()
-            .find(|language| language.as_mark() == value)
+            .find(|language| language.as_mark().contains(&&*value))
             .unwrap_or(Language::Unknown)
     }
 }
