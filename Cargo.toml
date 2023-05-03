@@ -8,7 +8,7 @@ repository = "https://github.com/Roms1383/mdbook-codeblocks"
 documentation = "https://docs.rs/mdbook-codeblocks"
 homepage = "https://github.com/Roms1383/mdbook-codeblocks"
 license = "MIT OR Apache-2.0"
-exclude = ["example.png", "justfile", "/.github/*"]
+exclude = ["example.png", "justfile", "/.github/*", "/example/*"]
 keywords = ["mdbook", "preprocessor"]
 description = """
 A mdbook preprocessor to prepend customizable vignette to code blocks.
