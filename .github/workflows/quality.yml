@@ -22,8 +22,6 @@ jobs:
           shared-key: ${{ matrix.os }}
       - name: ✅ run cargo check
         run: cargo check
-      - name: ✅ run cargo clippy
-        run: cargo clippy
   lint:
     needs: check
     runs-on: ubuntu-latest
@@ -37,6 +35,4 @@ jobs:
         with:
           shared-key: ubuntu-latest
       - name: 🔍 run cargo clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
+        run: cargo clippy
