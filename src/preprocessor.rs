@@ -132,7 +132,7 @@ impl Preprocessor for Codeblocks {
 fn is_supported(mark: &str) -> bool {
     let found = SUPPORTED_LANGUAGES
         .iter()
-        .any(|language| mark == language.as_mark());
+        .any(|language| language.as_mark().contains(&&*mark));
     found
 }
 

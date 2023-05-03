@@ -111,18 +111,12 @@ jobs:
           VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: 🔖 create GitHub release
-        uses: softprops/action-gh-release@v1
+        uses: ncipollo/release-action@v1
         with:
-          fail_on_unmatched_files: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          name: v${{ steps.tagName.outputs.version }}
-          files: |
-            artifacts/mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-aarch64-apple-darwin.tar.gz
-            artifacts/mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-apple-darwin.tar.gz
-            artifacts/mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-pc-windows-msvc.zip
-            artifacts/mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-pc-windows-gnu.zip
-            artifacts/mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-unknown-linux-gnu.tar.gz
-            artifacts/mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-x86_64-unknown-linux-musl.tar.gz
+          artifacts: "artifacts/*.tar.gz,artifacts/*.zip"
+          draft: true
+          artifactErrorsFailBuild: true
       - name: 🦀 publish to crates.io
         uses: katyo/publish-crates@v2
         with:
