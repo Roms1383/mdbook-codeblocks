@@ -24,6 +24,7 @@ pub const SUPPORTED_OPTIONS: [&str; 9] = [
     "icon",
 ];
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Clone, Copy, PartialEq)]
 pub enum Language {
     Empty,
