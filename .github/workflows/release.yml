@@ -85,7 +85,7 @@ jobs:
       - name: ↗️ upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.${{ matrix.flavor.ext }}
+          name: artifacts
           path: mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.${{ matrix.flavor.ext }}
           if-no-files-found: error
   release:
@@ -114,7 +114,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: "artifacts/**/*.tar.gz,artifacts/**/*.zip"
+          artifacts: "artifacts/*.tar.gz,artifacts/*.zip"
           draft: true
           artifactErrorsFailBuild: true
       - name: 🦀 publish to crates.io
