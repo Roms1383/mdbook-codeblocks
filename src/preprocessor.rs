@@ -132,7 +132,7 @@ impl Preprocessor for Codeblocks {
 fn is_supported(mark: &str) -> bool {
     let found = SUPPORTED_LANGUAGES
         .iter()
-        .any(|language| language.as_mark().contains(&&*mark));
+        .any(|language| language.as_mark().contains(&mark));
     found
 }
 
@@ -201,5 +201,5 @@ fn open_vignette(mark: Language, cfg: &Cfg) -> String {
 }
 
 fn close_vignette() -> String {
-    format!("</div>")
+    "</div>".to_string()
 }

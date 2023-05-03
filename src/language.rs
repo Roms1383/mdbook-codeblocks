@@ -56,7 +56,7 @@ impl Language {
         match self {
             Self::Empty | Self::Unknown => None,
             Self::Redscript => Some("redscript"),
-            lang => Some(lang.as_mark().get(0).unwrap()),
+            lang => Some(lang.as_mark().first().unwrap()),
         }
     }
     pub fn label<'a>(&'a self, cfg: &'a Cfg) -> &'a str {
@@ -130,7 +130,7 @@ impl From<&str> for Language {
         SUPPORTED_LANGUAGES
             .iter()
             .copied()
-            .find(|language| language.as_mark().contains(&&*value))
+            .find(|language| language.as_mark().contains(&value))
             .unwrap_or(Language::Unknown)
     }
 }
