@@ -14,15 +14,15 @@ fn main() -> Result {
     let opts = cli::init()?;
 
     // handle supports or processing:
-    let bob = preprocessor::Codeblocks::new();
+    let codeblocks = preprocessor::Codeblocks::new();
     if let Some(cli::Commands::Supports { renderer }) = opts.command {
         // Signal whether the renderer is supported by exiting with 1 or 0.
-        if bob.supports_renderer(&renderer) {
+        if codeblocks.supports_renderer(&renderer) {
             process::exit(0);
         } else {
             process::exit(1);
         }
-    } else if let Err(e) = bob.handle_preprocessing() {
+    } else if let Err(e) = codeblocks.handle_preprocessing() {
         print_error(&e);
         process::exit(1);
     }
