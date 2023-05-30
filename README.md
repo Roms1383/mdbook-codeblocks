@@ -32,7 +32,7 @@ swift = { label = "Swift code snippet", color = "skyblue" }
 
 Here's what it will produce:
 
-![example](example.png)
+![example](https://raw.githubusercontent.com/Roms1383/mdbook-codeblocks/main/example.png)
 
 You can actually find it in `example` folder.
 
