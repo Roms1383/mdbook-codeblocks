@@ -1097,7 +1097,7 @@ dependencies = [
 
 [[package]]
 name = "mdbook-codeblocks"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "anyhow",
  "clap",
