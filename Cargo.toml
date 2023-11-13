@@ -16,7 +16,7 @@ A mdbook preprocessor to prepend customizable vignette to code blocks.
 
 [dependencies]
 anyhow = "1.0.75"
-env_logger = "0.10.0"
+env_logger = "0.10.1"
 color-name = "1.1.0"
 log = "0.4"
 mdbook = "0.4.35"
