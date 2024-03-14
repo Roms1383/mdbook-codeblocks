@@ -1,4 +1,5 @@
 use crate::preprocessor::Cfg;
+use hex_color::HexColor;
 use log::warn;
 
 pub const SUPPORTED_LANGUAGES: [Language; 8] = [
@@ -110,7 +111,7 @@ impl Language {
     pub fn color<'a>(&'a self, cfg: &'a Cfg) -> Option<&'a str> {
         if let Some(option) = cfg.overrides.get(self.as_option().unwrap()) {
             if let Some(ref color) = option.color {
-                if raster::Color::hex(color).is_err()
+                if HexColor::parse(color).is_err()
                     && color_name::Color::val().by_string(color.clone()).is_err()
                 {
                     warn!("unknown color '{color}', skipped...");
