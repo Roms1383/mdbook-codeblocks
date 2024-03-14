@@ -43,7 +43,7 @@ jobs:
     runs-on: ${{ matrix.flavor.os }}
     steps:
       - name: ⬇️ checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: 🛠 setup cargo toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -66,7 +66,7 @@ jobs:
           VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: ⬇️ setup Just
-        uses: extractions/setup-just@v1
+        uses: extractions/setup-just@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 📦 bundle Unix / Linux / MacOS
@@ -82,7 +82,7 @@ jobs:
         run: |
           just bundle-zip "v${{ steps.tagName.outputs.version }}" "${{ matrix.flavor.target }}"
       - name: ↗️ upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.${{ matrix.flavor.ext }}
           if-no-files-found: error
@@ -93,13 +93,13 @@ jobs:
       contents: write
     steps:
       - name: ⬇️ checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: 🛠 setup cargo toolchain
         uses: dtolnay/rust-toolchain@stable
       - name: ♻️ cache Rust dependencies
         uses: Swatinem/rust-cache@v2
       - name: ↙️ download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
       - name: 🧐 read manifest version
         shell: bash
         id: tagName
