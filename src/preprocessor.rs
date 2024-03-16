@@ -159,7 +159,8 @@ fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::
             (Start(Tag::CodeBlock(Fenced(Borrowed(mark)))), None) if is_supported(mark) => {
                 let language = Language::from(*mark);
                 acc.push(Start(Tag::Paragraph));
-                acc.push(Html(open_vignette(language, cfg).into()));
+                acc.push(InlineHtml(open_vignette(language, cfg).into()));
+                acc.push(HardBreak);
                 acc.push(e.clone());
                 state = Open;
             }
@@ -173,7 +174,8 @@ fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::
             (End(TagEnd::CodeBlock), Gather) => {
                 state = None;
                 acc.push(e.clone());
-                acc.push(Html(close_vignette().into()));
+                acc.push(HardBreak);
+                acc.push(InlineHtml(close_vignette().into()));
                 acc.push(End(TagEnd::Paragraph));
             }
             _ => {
