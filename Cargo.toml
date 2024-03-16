@@ -1,7 +1,7 @@
 [package]
 name = "mdbook-codeblocks"
 authors = ["Roms1383"]
-version = "0.1.13"
+version = "0.1.14"
 edition = "2021"
 readme = "README.md"
 repository = "https://github.com/Roms1383/mdbook-codeblocks"
