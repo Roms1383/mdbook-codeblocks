@@ -138,7 +138,7 @@ fn is_supported(mark: &str) -> bool {
 
 /// process prepending code blocks with vignettes
 fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::fmt::Error> {
-    use pulldown_cmark::{CodeBlockKind, CowStr, Event, Tag};
+    use pulldown_cmark::{CodeBlockKind, CowStr, Event, Tag, TagEnd};
     use pulldown_cmark_to_cmark::cmark;
 
     enum State {
@@ -150,17 +150,15 @@ fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::
     let mut state = State::None;
     let mut buf = String::with_capacity(chapter.content.len());
     let parser = mdbook::utils::new_cmark_parser(&chapter.content, false);
-    #[allow(clippy::unnecessary_filter_map, unused_imports, unused_assignments)]
     let events = parser.fold(vec![], |mut acc, ref e| {
         use CodeBlockKind::*;
         use CowStr::*;
         use Event::*;
         use State::*;
-        use Tag::{CodeBlock, Paragraph};
         match (e, &mut state) {
-            (Start(CodeBlock(Fenced(Borrowed(mark)))), None) if is_supported(mark) => {
+            (Start(Tag::CodeBlock(Fenced(Borrowed(mark)))), None) if is_supported(mark) => {
                 let language = Language::from(*mark);
-                acc.push(Start(Paragraph));
+                acc.push(Start(Tag::Paragraph));
                 acc.push(Html(open_vignette(language, cfg).into()));
                 acc.push(e.clone());
                 state = Open;
@@ -172,11 +170,11 @@ fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::
             (Text(Borrowed(_)), Gather) => {
                 acc.push(e.clone());
             }
-            (End(CodeBlock(Fenced(Borrowed(mark)))), Gather) if is_supported(mark) => {
+            (End(TagEnd::CodeBlock), Gather) => {
                 state = None;
                 acc.push(e.clone());
                 acc.push(Html(close_vignette().into()));
-                acc.push(End(Paragraph));
+                acc.push(End(TagEnd::Paragraph));
             }
             _ => {
                 acc.push(e.clone());
