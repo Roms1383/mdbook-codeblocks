@@ -85,6 +85,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: mdbook-codeblocks-v${{ steps.tagName.outputs.version }}-${{ matrix.flavor.target }}.${{ matrix.flavor.ext }}
+          name: artifact-mdbook-codeblocks-${{ matrix.flavor.target }}
           if-no-files-found: error
   release:
     needs: [bundle]
@@ -100,6 +101,9 @@ jobs:
         uses: Swatinem/rust-cache@v2
       - name: ↙️ download artifacts
         uses: actions/download-artifact@v4
+        with:
+          path: artifact
+          merge-multiple: true
       - name: 🧐 read manifest version
         shell: bash
         id: tagName
