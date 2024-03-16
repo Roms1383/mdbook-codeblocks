@@ -15,23 +15,23 @@ A mdbook preprocessor to prepend customizable vignette to code blocks.
 """
 
 [dependencies]
-anyhow = "1.0.79"
+anyhow = "1.0.81"
 env_logger = "0.11.3"
 color-name = "1.1.0"
 hex_color = "3.0.0"
-log = "0.4"
+log = "0.4.21"
 mdbook = "0.4.37"
 pulldown-cmark = "0.10.0"
 pulldown-cmark-to-cmark = "12.0.0"
-semver = "1.0.21"
-serde_json = "1.0.113"
+semver = "1.0.22"
+serde_json = "1.0.114"
 
 [dependencies.clap]
-version = "4"
+version = "4.5.3"
 features = ["std", "derive", "cargo", "unicode", "error-context"]
 
 [dependencies.serde]
-version = "1"
+version = "1.0.197"
 features = ["derive"]
 
 [profile.dev.build-override]
