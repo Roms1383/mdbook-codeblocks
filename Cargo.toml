@@ -22,7 +22,7 @@ hex_color = "3.0.0"
 log = "0.4.22"
 mdbook = "0.4.40"
 pulldown-cmark = "0.10.3"
-pulldown-cmark-to-cmark = "14.0.1"
+pulldown-cmark-to-cmark = "17.0.0"
 semver = "1.0.23"
 serde_json = "1.0.128"
 
