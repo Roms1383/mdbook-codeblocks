@@ -27,7 +27,7 @@ semver = "1.0.24"
 serde_json = "1.0.137"
 
 [dependencies.clap]
-version = "4.5.26"
+version = "4.5.27"
 features = ["std", "derive", "cargo", "unicode", "error-context"]
 
 [dependencies.serde]
