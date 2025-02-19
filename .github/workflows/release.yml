@@ -53,6 +53,8 @@ jobs:
         run: cargo install cross
       - name: ♻️ cache Rust dependencies
         uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: ${{ runner.os }}-${{ matrix.flavor.target }}-${{ hashFiles('Cargo.lock') }}
       - name: ⚙️ cross build for ${{ matrix.flavor.target }}
         if: matrix.flavor.cross == true
         run: cross build --release --target ${{ matrix.flavor.target }}
