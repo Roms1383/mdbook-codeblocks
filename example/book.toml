@@ -11,6 +11,9 @@ redscript = { color = "tomato", link = "https://wiki.redmodding.org/redscript" }
 rust = { color = "#ac4313", link = "https://github.com/jac3km4/red4ext-rs" }
 lua = { link = "https://wiki.redmodding.org/cyber-engine-tweaks" }
 swift = { label = "Swift code snippet", color = "skyblue" }
+javascript = { color = "#FFFA8D" }
+typescript = { color = "brightblue" }
+csharp = { color = "skyblue" }
 yaml = { color = "tomato" }
 json = { color = "darkseagreen" }
 xml = { color = "#1E90FF" }
