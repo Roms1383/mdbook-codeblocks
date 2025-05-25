@@ -2,7 +2,7 @@ use crate::preprocessor::Cfg;
 use hex_color::HexColor;
 use log::warn;
 
-pub const SUPPORTED_LANGUAGES: [Language; 8] = [
+pub const SUPPORTED_LANGUAGES: [Language; 11] = [
     Language::Redscript,
     Language::Swift,
     Language::Cpp,
@@ -11,9 +11,12 @@ pub const SUPPORTED_LANGUAGES: [Language; 8] = [
     Language::YAML,
     Language::JSON,
     Language::XML,
+    Language::JavaScript,
+    Language::TypeScript,
+    Language::CSharp,
 ];
 
-pub const SUPPORTED_OPTIONS: [&str; 9] = [
+pub const SUPPORTED_OPTIONS: [&str; 12] = [
     "rust",
     "redscript",
     "lua",
@@ -23,6 +26,9 @@ pub const SUPPORTED_OPTIONS: [&str; 9] = [
     "json",
     "xml",
     "icon",
+    "javascript",
+    "typescript",
+    "csharp",
 ];
 
 #[allow(clippy::upper_case_acronyms)]
@@ -38,6 +44,9 @@ pub enum Language {
     YAML,
     JSON,
     XML,
+    JavaScript,
+    TypeScript,
+    CSharp,
 }
 
 impl Language {
@@ -51,6 +60,9 @@ impl Language {
             Self::YAML => &["yaml", "yml"],
             Self::JSON => &["json"],
             Self::XML => &["xml"],
+            Self::JavaScript => &["javascript", "js"],
+            Self::TypeScript => &["typescript", "ts"],
+            Self::CSharp => &["csharp", "c#"],
             Self::Empty | Self::Unknown => &[""],
         }
     }
@@ -85,6 +97,9 @@ impl Language {
             Self::YAML => "https://yaml.org",
             Self::JSON => "https://www.json.org",
             Self::XML => "https://www.xml.org",
+            Self::JavaScript => "https://developer.mozilla.org/docs/Web/JavaScript",
+            Self::TypeScript => "https://www.typescriptlang.org",
+            Self::CSharp => "https://learn.microsoft.com/dotnet/csharp",
         }
     }
     pub fn icon<'a>(&'a self, cfg: &'a Cfg) -> &'a str {
@@ -106,6 +121,9 @@ impl Language {
             Self::YAML => "fa-file",
             Self::JSON => "fa-file",
             Self::XML => "fa-file",
+            Self::JavaScript => "fa-js",
+            Self::TypeScript => "fa-square-tumblr",
+            Self::CSharp => "fa-microsoft",
         }
     }
     pub fn color<'a>(&'a self, cfg: &'a Cfg) -> Option<&'a str> {
@@ -156,6 +174,9 @@ impl AsRef<str> for Language {
             Self::YAML => "YAML",
             Self::JSON => "JSON",
             Self::XML => "XML",
+            Self::JavaScript => "JavaScript",
+            Self::TypeScript => "TypeScript",
+            Self::CSharp => "C#",
         }
     }
 }

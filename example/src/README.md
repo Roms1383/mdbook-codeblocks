@@ -27,6 +27,29 @@ int main() {
 }
 ```
 
+```js
+console.log('hello world');
+```
+
+```ts
+console.log('hello world');
+```
+
+```c#
+using System;
+
+namespace HelloWorld
+{
+  class Program
+  {
+    static void Main(string[] args)
+    {
+      Console.WriteLine("Hello World!");    
+    }
+  }
+}
+```
+
 ```yaml
 some:
   interesting:
