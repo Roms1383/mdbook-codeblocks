@@ -24,7 +24,7 @@ mdbook = "0.4.51"
 pulldown-cmark = "0.10.3"
 pulldown-cmark-to-cmark = "14.0.1"
 semver = "1.0.26"
-serde_json = "1.0.140"
+serde_json = "1.0.141"
 
 [dependencies.clap]
 version = "4.5.41"
