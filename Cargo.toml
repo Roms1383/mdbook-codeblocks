@@ -2,7 +2,7 @@
 name = "mdbook-codeblocks"
 authors = ["Roms1383"]
 version = "0.1.24"
-edition = "2021"
+edition = "2024"
 readme = "README.md"
 repository = "https://github.com/Roms1383/mdbook-codeblocks"
 documentation = "https://docs.rs/mdbook-codeblocks"
