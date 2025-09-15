@@ -314,9 +314,9 @@ checksum = "f46ad14479a25103f283c0f10005961cf086d8dc42205bb44c46ac563475dca6"
 
 [[package]]
 name = "color-name"
-version = "1.1.1"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dd81d33614d7906bda061201ed573ec656ab9c8a38c3bf5224c0f54f6bd6dfa6"
+checksum = "2980f82525cf4a0eb43a7dcc1396bbea824897a98ef4948bd150310469acb432"
 
 [[package]]
 name = "colorchoice"
