@@ -130,7 +130,9 @@ impl Language {
         if let Some(option) = cfg.overrides.get(self.as_option().unwrap()) {
             if let Some(ref color) = option.color {
                 if HexColor::parse(color).is_err()
-                    && color_name::Color::val().by_string(color.clone()).is_err()
+                    && color_name::css::Color::val()
+                        .by_string(color.clone())
+                        .is_err()
                 {
                     warn!("unknown color '{color}', skipped...");
                     return None;
