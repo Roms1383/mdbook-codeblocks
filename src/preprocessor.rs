@@ -130,10 +130,10 @@ impl Preprocessor for Codeblocks {
 
 /// whether mark is a supported language or not
 fn is_supported(mark: &str) -> bool {
-    let found = SUPPORTED_LANGUAGES
+    
+    SUPPORTED_LANGUAGES
         .iter()
-        .any(|language| language.as_mark().contains(&mark));
-    found
+        .any(|language| language.as_mark().contains(&mark))
 }
 
 /// process prepending code blocks with vignettes
