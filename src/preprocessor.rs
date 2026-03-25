@@ -67,9 +67,10 @@ impl Preprocessor for Codeblocks {
             icon: None,
             overrides: HashMap::new(),
         };
-        if let Ok(preprocessors) = ctx.config.preprocessors::<toml::Value>() {
-            if let Some(toml::Value::Table(cfg)) = preprocessors.get(self.name()) {
-                cfg.iter().for_each(|(key, val)| {
+        if let Ok(preprocessors) = ctx.config.preprocessors::<toml::Value>()
+            && let Some(toml::Value::Table(cfg)) = preprocessors.get(self.name())
+        {
+            cfg.iter().for_each(|(key, val)| {
                 if !SUPPORTED_OPTIONS.contains(&key.as_str()) { return; }
                 match key.as_str() {
                     key if val.is_table() => {
@@ -88,13 +89,12 @@ impl Preprocessor for Codeblocks {
                           "label" if v.is_str() => {
                              customization.label = v.as_str().map(ToString::to_string);
                           },
-
                           _ => {
                             error!(
                               "got unexpected '{}' (expects 'rust', 'redscript', 'swift', 'lua', 'cpp' or 'icon')",
                               key,
-                          );
-                          std::process::exit(1)
+                            );
+                            std::process::exit(1)
                           },
                         };
                       }
@@ -112,7 +112,6 @@ impl Preprocessor for Codeblocks {
                     }
                 }
             });
-            }
         }
 
         book.for_each_mut(|item| {
