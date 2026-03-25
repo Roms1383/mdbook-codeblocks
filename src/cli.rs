@@ -1,5 +1,5 @@
 use crate::Result;
-use clap::{crate_description, Parser, Subcommand};
+use clap::{Parser, Subcommand, crate_description};
 use log::error;
 
 const DESCRIPTION: &str = concat!(crate_description!(), "\n", env!("CARGO_PKG_HOMEPAGE"));

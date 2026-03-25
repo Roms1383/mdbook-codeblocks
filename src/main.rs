@@ -1,5 +1,5 @@
 use log::error;
-use mdbook::preprocess::Preprocessor;
+use mdbook_preprocessor::Preprocessor;
 use std::error::Error;
 use std::process;
 
@@ -17,7 +17,7 @@ fn main() -> Result {
     let codeblocks = preprocessor::Codeblocks::new();
     if let Some(cli::Commands::Supports { renderer }) = opts.command {
         // Signal whether the renderer is supported by exiting with 1 or 0.
-        if codeblocks.supports_renderer(&renderer) {
+        if codeblocks.supports_renderer(&renderer).unwrap_or(false) {
             process::exit(0);
         } else {
             process::exit(1);

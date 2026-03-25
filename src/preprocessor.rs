@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
 use log::error;
-use mdbook::book::{Book, BookItem, Chapter};
-use mdbook::errors::Error;
-use mdbook::preprocess::{CmdPreprocessor, Preprocessor, PreprocessorContext};
+use mdbook_preprocessor::book::{Book, BookItem, Chapter};
+use mdbook_preprocessor::errors::Error;
+use mdbook_preprocessor::{Preprocessor, PreprocessorContext};
 use serde::Deserialize;
 
 use crate::language::{Language, SUPPORTED_LANGUAGES, SUPPORTED_OPTIONS};
@@ -34,16 +34,16 @@ impl Codeblocks {
         use semver::{Version, VersionReq};
         use std::io::{stdin, stdout};
 
-        let (ctx, book) = CmdPreprocessor::parse_input(stdin())?;
+        let (ctx, book) = mdbook_preprocessor::parse_input(stdin())?;
         let current = Version::parse(&ctx.mdbook_version)?;
-        let built = VersionReq::parse(&format!("~{}", mdbook::MDBOOK_VERSION))?;
+        let built = VersionReq::parse(&format!("~{}", mdbook_core::MDBOOK_VERSION))?;
 
-        if ctx.mdbook_version != mdbook::MDBOOK_VERSION && !built.matches(&current) {
+        if ctx.mdbook_version != mdbook_core::MDBOOK_VERSION && !built.matches(&current) {
             error!(
                 "The {} plugin was built against version {} of mdbook, \
 				      but we're being called from version {}, so may be incompatible.",
                 self.name(),
-                mdbook::MDBOOK_VERSION,
+                mdbook_core::MDBOOK_VERSION,
                 ctx.mdbook_version
             );
         }
@@ -58,8 +58,8 @@ impl Preprocessor for Codeblocks {
         "codeblocks"
     }
 
-    fn supports_renderer(&self, renderer: &str) -> bool {
-        renderer != "html"
+    fn supports_renderer(&self, renderer: &str) -> anyhow::Result<bool> {
+        Ok(renderer != "html")
     }
 
     fn run(&self, ctx: &PreprocessorContext, mut book: Book) -> Result<Book, Error> {
@@ -67,50 +67,51 @@ impl Preprocessor for Codeblocks {
             icon: None,
             overrides: HashMap::new(),
         };
-        if let Some(cfg) = ctx.config.get_preprocessor(self.name()) {
+        if let Ok(preprocessors) = ctx.config.preprocessors::<toml::Value>()
+            && let Some(toml::Value::Table(cfg)) = preprocessors.get(self.name())
+        {
             cfg.iter().for_each(|(key, val)| {
-            if !SUPPORTED_OPTIONS.contains(&key.as_str()) { return; }
-            match key.as_str() {
-                key if val.is_table() => {
-                  let mut customization: Customization = Customization { color: None, icon: None, label: None, link: None };
-                  for (k, v) in val.as_table().unwrap() {
-                    match k.as_str() {
-                      "icon" if v.is_str() => {
-                        customization.icon = v.as_str().map(ToString::to_string);
-                      },
-                      "color" if v.is_str() => {
-                         customization.color = v.as_str().map(ToString::to_string);
-                        },
-                      "link" if v.is_str() => {
-                         customization.link = v.as_str().map(ToString::to_string);
-                        },
-                      "label" if v.is_str() => {
-                         customization.label = v.as_str().map(ToString::to_string);
-                      },
-
-                      _ => {
-                        error!(
-                          "got unexpected '{}' (expects 'rust', 'redscript', 'swift', 'lua', 'cpp' or 'icon')",
-                          key,
-                      );
-                      std::process::exit(1)
-                      },
-                    };
-                  }
-                  config.overrides.insert(key.to_string(), customization);
-                },
-                "icon" if val.is_str() => {
-                  config.icon = Some(val.as_str().unwrap().to_owned());
-                },
-                key => {
-                  error!(
-                    "got unexpected '{}' (expects 'rust', 'redscript', 'swift', 'lua', 'cpp' or 'icon')",
-                    key,
-                );
-                std::process::exit(1)
+                if !SUPPORTED_OPTIONS.contains(&key.as_str()) { return; }
+                match key.as_str() {
+                    key if val.is_table() => {
+                      let mut customization: Customization = Customization { color: None, icon: None, label: None, link: None };
+                      for (k, v) in val.as_table().unwrap() {
+                        match k.as_str() {
+                          "icon" if v.is_str() => {
+                            customization.icon = v.as_str().map(ToString::to_string);
+                          },
+                          "color" if v.is_str() => {
+                             customization.color = v.as_str().map(ToString::to_string);
+                            },
+                          "link" if v.is_str() => {
+                             customization.link = v.as_str().map(ToString::to_string);
+                            },
+                          "label" if v.is_str() => {
+                             customization.label = v.as_str().map(ToString::to_string);
+                          },
+                          _ => {
+                            error!(
+                              "got unexpected '{}' (expects 'rust', 'redscript', 'swift', 'lua', 'cpp' or 'icon')",
+                              key,
+                            );
+                            std::process::exit(1)
+                          },
+                        };
+                      }
+                      config.overrides.insert(key.to_string(), customization);
+                    },
+                    "icon" if val.is_str() => {
+                      config.icon = Some(val.as_str().unwrap().to_owned());
+                    },
+                    key => {
+                      error!(
+                        "got unexpected '{}' (expects 'rust', 'redscript', 'swift', 'lua', 'cpp' or 'icon')",
+                        key,
+                    );
+                    std::process::exit(1)
+                    }
                 }
-            }
-        });
+            });
         }
 
         book.for_each_mut(|item| {
@@ -130,14 +131,16 @@ impl Preprocessor for Codeblocks {
 
 /// whether mark is a supported language or not
 fn is_supported(mark: &str) -> bool {
-    
     SUPPORTED_LANGUAGES
         .iter()
         .any(|language| language.as_mark().contains(&mark))
 }
 
 /// process prepending code blocks with vignettes
-fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::fmt::Error> {
+fn process_code_blocks(
+    chapter: &mut Chapter,
+    cfg: &Cfg,
+) -> Result<String, pulldown_cmark_to_cmark::Error> {
     use pulldown_cmark::{CodeBlockKind, CowStr, Event, Tag, TagEnd};
     use pulldown_cmark_to_cmark::cmark;
 
@@ -149,7 +152,7 @@ fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::
 
     let mut state = State::None;
     let mut buf = String::with_capacity(chapter.content.len());
-    let parser = mdbook::utils::new_cmark_parser(&chapter.content, false);
+    let parser = mdbook_markdown::new_cmark_parser(&chapter.content, &Default::default());
     let events = parser.fold(vec![], |mut acc, ref e| {
         use CodeBlockKind::*;
         use CowStr::*;

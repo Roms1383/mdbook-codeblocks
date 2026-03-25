@@ -75,16 +75,18 @@ impl Language {
     }
     pub fn label<'a>(&'a self, cfg: &'a Cfg) -> &'a str {
         if let Some(option) = cfg.overrides.get(self.as_option().unwrap())
-            && let Some(ref label) = option.label {
-                return label.as_str();
-            }
+            && let Some(ref label) = option.label
+        {
+            return label.as_str();
+        }
         self.as_ref()
     }
     pub fn link<'a>(&'a self, cfg: &'a Cfg) -> &'a str {
         if let Some(option) = cfg.overrides.get(self.as_option().unwrap())
-            && let Some(ref link) = option.link {
-                return link.as_str();
-            }
+            && let Some(ref link) = option.link
+        {
+            return link.as_str();
+        }
         match self {
             Self::Unknown | Self::Empty => "#",
             Self::Swift => "https://developer.apple.com/swift",
@@ -102,9 +104,10 @@ impl Language {
     }
     pub fn icon<'a>(&'a self, cfg: &'a Cfg) -> &'a str {
         if let Some(option) = cfg.overrides.get(self.as_option().unwrap())
-            && let Some(ref icon) = option.icon {
-                return icon.as_str();
-            }
+            && let Some(ref icon) = option.icon
+        {
+            return icon.as_str();
+        }
         if let Some(ref icon) = cfg.icon {
             return icon.as_str();
         }
@@ -125,17 +128,18 @@ impl Language {
     }
     pub fn color<'a>(&'a self, cfg: &'a Cfg) -> Option<&'a str> {
         if let Some(option) = cfg.overrides.get(self.as_option().unwrap())
-            && let Some(ref color) = option.color {
-                if HexColor::parse(color).is_err()
-                    && color_name::css::Color::val()
-                        .by_string(color.clone())
-                        .is_err()
-                {
-                    warn!("unknown color '{color}', skipped...");
-                    return None;
-                }
-                return Some(color.as_str());
+            && let Some(ref color) = option.color
+        {
+            if HexColor::parse(color).is_err()
+                && color_name::css::Color::val()
+                    .by_string(color.clone())
+                    .is_err()
+            {
+                warn!("unknown color '{color}', skipped...");
+                return None;
             }
+            return Some(color.as_str());
+        }
         None
     }
 }
