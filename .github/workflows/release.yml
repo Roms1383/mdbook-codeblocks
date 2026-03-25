@@ -68,9 +68,7 @@ jobs:
           VERSION=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: ⬇️ setup Just
-        uses: extractions/setup-just@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: taiki-e/install-action@just
       - name: 📦 bundle Unix / Linux / MacOS
         if: matrix.flavor.target != 'x86_64-pc-windows-msvc' && matrix.flavor.target != 'x86_64-pc-windows-gnu'
         run: |
