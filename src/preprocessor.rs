@@ -1,9 +1,10 @@
 use std::collections::HashMap;
 
 use log::error;
-use mdbook::book::{Book, BookItem, Chapter};
-use mdbook::errors::Error;
-use mdbook::preprocess::{CmdPreprocessor, Preprocessor, PreprocessorContext};
+use mdbook_driver::builtin_preprocessors::CmdPreprocessor;
+use mdbook_preprocessor::book::{Book, BookItem, Chapter};
+use mdbook_preprocessor::errors::Error;
+use mdbook_preprocessor::{Preprocessor, PreprocessorContext};
 use serde::Deserialize;
 
 use crate::language::{Language, SUPPORTED_LANGUAGES, SUPPORTED_OPTIONS};
@@ -34,16 +35,16 @@ impl Codeblocks {
         use semver::{Version, VersionReq};
         use std::io::{stdin, stdout};
 
-        let (ctx, book) = CmdPreprocessor::parse_input(stdin())?;
+        let (ctx, book) = mdbook_preprocessor::parse_input(stdin())?;
         let current = Version::parse(&ctx.mdbook_version)?;
-        let built = VersionReq::parse(&format!("~{}", mdbook::MDBOOK_VERSION))?;
+        let built = VersionReq::parse(&format!("~{}", mdbook_core::MDBOOK_VERSION))?;
 
-        if ctx.mdbook_version != mdbook::MDBOOK_VERSION && !built.matches(&current) {
+        if ctx.mdbook_version != mdbook_core::MDBOOK_VERSION && !built.matches(&current) {
             error!(
                 "The {} plugin was built against version {} of mdbook, \
 				      but we're being called from version {}, so may be incompatible.",
                 self.name(),
-                mdbook::MDBOOK_VERSION,
+                mdbook_core::MDBOOK_VERSION,
                 ctx.mdbook_version
             );
         }
@@ -58,8 +59,8 @@ impl Preprocessor for Codeblocks {
         "codeblocks"
     }
 
-    fn supports_renderer(&self, renderer: &str) -> bool {
-        renderer != "html"
+    fn supports_renderer(&self, renderer: &str) -> anyhow::Result<bool> {
+        Ok(renderer != "html")
     }
 
     fn run(&self, ctx: &PreprocessorContext, mut book: Book) -> Result<Book, Error> {
@@ -130,7 +131,6 @@ impl Preprocessor for Codeblocks {
 
 /// whether mark is a supported language or not
 fn is_supported(mark: &str) -> bool {
-    
     SUPPORTED_LANGUAGES
         .iter()
         .any(|language| language.as_mark().contains(&mark))
