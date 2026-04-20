@@ -31,7 +31,7 @@ mdbook-driver = "0.5.2"
 mdbook-core = "0.5.2"
 
 [dependencies.clap]
-version = "4.6.0"
+version = "4.6.1"
 features = ["std", "derive", "cargo", "unicode", "error-context"]
 
 [dependencies.serde]
