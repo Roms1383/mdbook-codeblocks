@@ -617,9 +617,9 @@ dependencies = [
 
 [[package]]
 name = "mdbook-markdown"
-version = "0.5.2"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "07c41bf35212f5d8b83e543aa6a4887dc5709c8489c5fb9ed00f1b51ce1a2cc6"
+checksum = "2cb3ca9eadf02ce206118a0b9c264718723d669b110c01a720fa9a0786f30642"
 dependencies = [
  "pulldown-cmark",
  "regex",
