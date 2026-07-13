@@ -346,9 +346,9 @@ checksum = "d9c4f5dac5e15c24eb999c26181a6ca40b39fe946cbe4c263c7209467bc83af2"
 
 [[package]]
 name = "font-awesome-as-a-crate"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "932dcfbd51320af5f27f1ba02d2e567dec332cac7d2c221ba45d8e767264c4dc"
+checksum = "b40fbe89eb7639971503bf5f17bd31c41338e8f92e03c5744d07f2e03d43f679"
 
 [[package]]
 name = "generic-array"
@@ -395,9 +395,9 @@ dependencies = [
 
 [[package]]
 name = "handlebars"
-version = "6.4.0"
+version = "6.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b3f9296c208515b87bd915a2f5d1163d4b3f863ba83337d7713cf478055948e"
+checksum = "4633d16a2350341713c379d6d06a4b9e1845329386026a49ce4fd09c2f3b16f6"
 dependencies = [
  "derive_builder",
  "log",
@@ -606,9 +606,9 @@ dependencies = [
 
 [[package]]
 name = "mdbook-driver"
-version = "0.5.3"
+version = "0.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2068566fc3c100cfd19f4a13e4e0eb4fdcd2250cfd0aa633ec25102b1c98d53e"
+checksum = "485612ee2a91847760e742ce441673fa127306a43f44e666796f7d99d4592272"
 dependencies = [
  "anyhow",
  "indexmap",
@@ -630,9 +630,9 @@ dependencies = [
 
 [[package]]
 name = "mdbook-html"
-version = "0.5.3"
+version = "0.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85ed2140251689f928615f0a5615413eb072eb28e003d179257aa4f034c95513"
+checksum = "8d25933e4d7cbaa342db9ab9f414c2a09b1c59becb63ad344520370d822ab28a"
 dependencies = [
  "anyhow",
  "ego-tree",
@@ -665,9 +665,9 @@ dependencies = [
 
 [[package]]
 name = "mdbook-preprocessor"
-version = "0.5.3"
+version = "0.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8eff7b4afaafd664a649a03b8891ad8199aef359a35b911ad6c31acab38ed209"
+checksum = "f8e75b08763e31982701d5b2680124bd4bd9bed4a4e1b5a499381320ccae199f"
 dependencies = [
  "anyhow",
  "mdbook-core",
@@ -677,9 +677,9 @@ dependencies = [
 
 [[package]]
 name = "mdbook-renderer"
-version = "0.5.3"
+version = "0.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e607259410d53aa5cdaf5b6c1c6b3fd61f2e0f0523ebf457d34cd4f0b71e2a88"
+checksum = "75d378308f820f05c6c89e4ec552a3c64a0cc10ccab7dcc93a2baa3bc714ea1b"
 dependencies = [
  "anyhow",
  "mdbook-core",
@@ -689,9 +689,9 @@ dependencies = [
 
 [[package]]
 name = "mdbook-summary"
-version = "0.5.3"
+version = "0.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cae8a734e5e35b0bc145b46d01fd27e266ba647dcdb9b8c907cb6a29eca9122b"
+checksum = "2453622fa7236139365a9acd20314ab859ff747d57ba36ff0d476b64adc75cf8"
 dependencies = [
  "anyhow",
  "mdbook-core",
@@ -703,9 +703,9 @@ dependencies = [
 
 [[package]]
 name = "memchr"
-version = "2.8.0"
+version = "2.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f8ca58f447f06ed17d5fc4043ce1b10dd205e060fb3ce5b979b8ed8e59ff3f79"
+checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
 
 [[package]]
 name = "new_debug_unreachable"
@@ -1072,6 +1072,7 @@ version = "1.0.150"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e8014e44b4736ed0538adeecded0fce2a272f22dc9578a7eb6b2d9993c74cfb9"
 dependencies = [
+ "indexmap",
  "itoa",
  "memchr",
  "serde",
@@ -1112,9 +1113,9 @@ dependencies = [
 
 [[package]]
 name = "shlex"
-version = "1.3.0"
+version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fda2ff0d084019ba4d7c6f371c95d8fd75ce3524c3cb8fb653a3023f6323e64"
+checksum = "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba"
 
 [[package]]
 name = "siphasher"
