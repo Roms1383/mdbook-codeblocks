@@ -1,6 +1,7 @@
 use crate::preprocessor::Cfg;
 use hex_color::HexColor;
 use log::warn;
+use std::borrow::Cow;
 
 pub const SUPPORTED_LANGUAGES: [Language; 11] = [
     Language::Redscript,
@@ -102,29 +103,30 @@ impl Language {
             Self::CSharp => "https://learn.microsoft.com/dotnet/csharp",
         }
     }
-    pub fn icon<'a>(&'a self, cfg: &'a Cfg) -> &'a str {
+    /// Font Awesome classes for the icon, including its style (`fa-solid`, `fa-brands`, ...).
+    pub fn icon<'a>(&'a self, cfg: &'a Cfg) -> Cow<'a, str> {
         if let Some(option) = cfg.overrides.get(self.as_option().unwrap())
             && let Some(ref icon) = option.icon
         {
-            return icon.as_str();
+            return with_style(icon);
         }
         if let Some(ref icon) = cfg.icon {
-            return icon.as_str();
+            return with_style(icon);
         }
-        match self {
+        Cow::Borrowed(match self {
             Self::Empty | Self::Unknown => "",
-            Self::Swift => "fa-dove",
-            Self::Redscript => "fa-r",
-            Self::Rust => "fa-spaghetti-monster-flying",
-            Self::Cpp => "fa-cube",
-            Self::Lua => "fa-globe",
-            Self::YAML => "fa-file",
-            Self::JSON => "fa-file",
-            Self::XML => "fa-file",
-            Self::JavaScript => "fa-js",
-            Self::TypeScript => "fa-square-tumblr",
-            Self::CSharp => "fa-microsoft",
-        }
+            Self::Swift => "fa-solid fa-dove",
+            Self::Redscript => "fa-solid fa-r",
+            Self::Rust => "fa-solid fa-spaghetti-monster-flying",
+            Self::Cpp => "fa-solid fa-cube",
+            Self::Lua => "fa-solid fa-globe",
+            Self::YAML => "fa-solid fa-file",
+            Self::JSON => "fa-solid fa-file",
+            Self::XML => "fa-solid fa-file",
+            Self::JavaScript => "fa-brands fa-js",
+            Self::TypeScript => "fa-brands fa-square-tumblr",
+            Self::CSharp => "fa-brands fa-microsoft",
+        })
     }
     pub fn color<'a>(&'a self, cfg: &'a Cfg) -> Option<&'a str> {
         if let Some(option) = cfg.overrides.get(self.as_option().unwrap())
@@ -180,5 +182,15 @@ impl AsRef<str> for Language {
             Self::TypeScript => "TypeScript",
             Self::CSharp => "C#",
         }
+    }
+}
+
+/// Defaults to `fa-solid` unless a Font Awesome style is already specified.
+fn with_style(icon: &str) -> Cow<'_, str> {
+    const STYLES: [&str; 6] = ["fa-solid", "fa-regular", "fa-brands", "fas", "far", "fab"];
+    if icon.split_whitespace().any(|class| STYLES.contains(&class)) {
+        Cow::Borrowed(icon)
+    } else {
+        Cow::Owned(format!("fa-solid {icon}"))
     }
 }

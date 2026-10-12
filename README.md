@@ -49,3 +49,4 @@ Likewise it only supports a small subset of 5 languages so far, please add more!
 ## attribution
 
 This tool uses icons from [FontAwesome](https://fontawesome.com/) by default.
+Custom icons use the solid style unless another is given, e.g. brand icons need `icon = "fa-brands fa-github"`.

@@ -136,12 +136,26 @@ fn is_supported(mark: &str) -> bool {
         .any(|language| language.as_mark().contains(&mark))
 }
 
+/// parser options matching `mdbook_markdown::new_cmark_parser` with default `MarkdownOptions`,
+/// shared by both the parser and the serializer so they agree on the Markdown dialect
+fn parser_options() -> pulldown_cmark::Options {
+    use pulldown_cmark::Options;
+    Options::ENABLE_TABLES
+        | Options::ENABLE_FOOTNOTES
+        | Options::ENABLE_STRIKETHROUGH
+        | Options::ENABLE_TASKLISTS
+        | Options::ENABLE_HEADING_ATTRIBUTES
+        | Options::ENABLE_SMART_PUNCTUATION
+        | Options::ENABLE_DEFINITION_LIST
+        | Options::ENABLE_GFM
+}
+
 /// process prepending code blocks with vignettes
 fn process_code_blocks(
     chapter: &mut Chapter,
     cfg: &Cfg,
 ) -> Result<String, pulldown_cmark_to_cmark::Error> {
-    use pulldown_cmark::{CodeBlockKind, CowStr, Event, Tag, TagEnd};
+    use pulldown_cmark::{CodeBlockKind, CowStr, Event, Parser, Tag, TagEnd};
     use pulldown_cmark_to_cmark::cmark;
 
     enum State {
@@ -152,7 +166,8 @@ fn process_code_blocks(
 
     let mut state = State::None;
     let mut buf = String::with_capacity(chapter.content.len());
-    let parser = mdbook_markdown::new_cmark_parser(&chapter.content, &Default::default());
+    let options = parser_options();
+    let parser = Parser::new_ext(&chapter.content, options);
     let events = parser.fold(vec![], |mut acc, ref e| {
         use CodeBlockKind::*;
         use CowStr::*;
@@ -161,9 +176,9 @@ fn process_code_blocks(
         match (e, &mut state) {
             (Start(Tag::CodeBlock(Fenced(Borrowed(mark)))), None) if is_supported(mark) => {
                 let language = Language::from(*mark);
-                acc.push(Start(Tag::Paragraph));
-                acc.push(InlineHtml(open_vignette(language, cfg).into()));
-                acc.push(HardBreak);
+                acc.push(Start(Tag::HtmlBlock));
+                acc.push(Html(open_vignette(language, cfg).into()));
+                acc.push(End(TagEnd::HtmlBlock));
                 acc.push(e.clone());
                 state = Open;
             }
@@ -177,9 +192,9 @@ fn process_code_blocks(
             (End(TagEnd::CodeBlock), Gather) => {
                 state = None;
                 acc.push(e.clone());
-                acc.push(HardBreak);
-                acc.push(InlineHtml(close_vignette().into()));
-                acc.push(End(TagEnd::Paragraph));
+                acc.push(Start(Tag::HtmlBlock));
+                acc.push(Html(close_vignette().into()));
+                acc.push(End(TagEnd::HtmlBlock));
             }
             _ => {
                 acc.push(e.clone());
@@ -187,7 +202,7 @@ fn process_code_blocks(
         };
         acc
     });
-    cmark(events.iter(), &mut buf).map(|_| buf)
+    cmark(events.iter(), &mut buf, options).map(|_| buf)
 }
 
 fn open_vignette(mark: Language, cfg: &Cfg) -> String {
@@ -199,7 +214,7 @@ fn open_vignette(mark: Language, cfg: &Cfg) -> String {
         .map(|x| format!("--fa-primary-color:{x};color:{x};"))
         .unwrap_or("".into());
     format!(
-        "<div class='codeblocks'>\n<a style=\"font-size:12px;text-decoration:none;{color}\" href=\"{link}\"><i style=\"font-size:18px;{color}\" class=\"fa fa-solid {icon}\"></i>&nbsp;&nbsp;{name}</a>",
+        "<div class='codeblocks'>\n<a style=\"font-size:12px;text-decoration:none;{color}\" href=\"{link}\"><i style=\"font-size:18px;{color}\" class=\"fa {icon}\"></i>&nbsp;&nbsp;{name}</a>",
     )
 }
 
