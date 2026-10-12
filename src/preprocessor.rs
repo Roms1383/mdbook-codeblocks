@@ -214,10 +214,10 @@ fn open_vignette(mark: Language, cfg: &Cfg) -> String {
         .map(|x| format!("--fa-primary-color:{x};color:{x};"))
         .unwrap_or("".into());
     format!(
-        "<div class='codeblocks'>\n<a style=\"font-size:12px;text-decoration:none;{color}\" href=\"{link}\"><i style=\"font-size:18px;{color}\" class=\"fa fa-solid {icon}\"></i>&nbsp;&nbsp;{name}</a>\n",
+        "<div class='codeblocks'><a style=\"font-size:12px;text-decoration:none;{color}\" href=\"{link}\"><i style=\"font-size:18px;{color}\" class=\"fa fa-solid {icon}\"></i>&nbsp;&nbsp;{name}</a>",
     )
 }
 
 fn close_vignette() -> String {
-    "</div>\n".to_string()
+    "</div>".to_string()
 }
